@@ -8,7 +8,6 @@ import org.eclipse.cargotracker.domain.model.location.UnLocode;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -43,23 +42,26 @@ public class DefaultBookingServiceFacadeTest {
         @Override
         public TrackingId bookNewCargo(UnLocode origin, UnLocode destination,
                                        Date arrivalDeadline) {
-            return null;
+            throw new AssertionError("Unexpected bookNewCargo call");
         }
 
         @Override
         public List<Itinerary> requestPossibleRoutesForCargo(
                 TrackingId trackingId) {
-            return Collections.emptyList();
+            throw new AssertionError(
+                    "Unexpected requestPossibleRoutesForCargo call");
         }
 
         @Override
         public void assignCargoToRoute(Itinerary itinerary,
                                        TrackingId trackingId) {
+            throw new AssertionError("Unexpected assignCargoToRoute call");
         }
 
         @Override
         public void changeDestination(TrackingId trackingId,
                                       UnLocode unLocode) {
+            throw new AssertionError("Unexpected changeDestination call");
         }
 
         @Override

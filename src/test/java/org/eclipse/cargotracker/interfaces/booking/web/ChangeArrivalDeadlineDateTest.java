@@ -79,7 +79,7 @@ public class ChangeArrivalDeadlineDateTest {
 
     @Test
     public void changeDelegatesSelectedDateAndClosesAfterSuccess() {
-        Date selectedDate = new Date();
+        final Date selectedDate = new Date();
         bean.setArrivalDeadlineDate(selectedDate);
         PrimeFaces.setCurrent(new PrimeFaces() {
             @Override

@@ -54,8 +54,8 @@ public class ChangeArrivalDeadlineDate implements Serializable {
         try {
             arrivalDeadlineDate = dateFormat.parse(cargo.getArrivalDeadlineDate());
         } catch (ParseException exception) {
+            arrivalDeadlineDate = null;
             addErrorMessage("The cargo arrival deadline could not be read.");
-            throw new IllegalStateException("Invalid cargo arrival deadline date", exception);
         }
     }
 

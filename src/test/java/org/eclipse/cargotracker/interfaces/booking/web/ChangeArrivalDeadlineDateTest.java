@@ -15,8 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
 
 public class ChangeArrivalDeadlineDateTest {
 
@@ -58,12 +58,9 @@ public class ChangeArrivalDeadlineDateTest {
             }
         };
 
-        try {
-            bean.load();
-            fail("Expected malformed date failure");
-        } catch (IllegalStateException expected) {
-            assertEquals("Invalid cargo arrival deadline date", expected.getMessage());
-        }
+        bean.load();
+
+        assertNull(bean.getArrivalDeadlineDate());
     }
 
     @Test

@@ -11,14 +11,13 @@
     <title>Change Deadline</title>
 </h:head>
 <h:body>
-    <h:form>
+    <h:form id="deadlineForm">
         <h:panelGrid columns="2" cellpadding="15">
-            <p:outputLabel for="origin" value="Origin:"/>
-            <p:outputLabel id="origin" value="#{changeArrivalDeadlineDate.cargo.originName}"/>
+            <h:outputText value="Origin:"/>
+            <h:outputText value="#{changeArrivalDeadlineDate.cargo.originName}"/>
 
-            <p:outputLabel for="destination" value="Destination:"/>
-            <p:outputLabel id="destination"
-                           value="#{changeArrivalDeadlineDate.cargo.finalDestinationName}"/>
+            <h:outputText value="Destination:"/>
+            <h:outputText value="#{changeArrivalDeadlineDate.cargo.finalDestinationName}"/>
 
             <p:outputLabel for="arrivalDeadlineDate" value="Deadline:"/>
             <p:datePicker id="arrivalDeadlineDate"
@@ -28,8 +27,12 @@
             <p:message for="arrivalDeadlineDate"/>
 
             <p:commandButton value="Cancel"
+                             process="@this"
+                             immediate="true"
                              action="#{changeArrivalDeadlineDateDialog.cancel()}"/>
             <p:commandButton value="Update"
+                             process="@form"
+                             update="@form"
                              action="#{changeArrivalDeadlineDate.changeArrivalDeadline()}"/>
         </h:panelGrid>
     </h:form>

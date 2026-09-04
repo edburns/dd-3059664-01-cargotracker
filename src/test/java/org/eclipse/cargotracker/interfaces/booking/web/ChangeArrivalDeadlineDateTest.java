@@ -9,7 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.primefaces.PrimeFaces;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.context.FacesContextWrapper;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,14 +21,18 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 public class ChangeArrivalDeadlineDateTest {
 
     private RecordingFacade facade;
     private ChangeArrivalDeadlineDate bean;
+    private RecordingFacesContext facesContext;
 
     @Before
     public void setUp() throws Exception {
+        facesContext = new RecordingFacesContext();
+        facesContext.install();
         facade = new RecordingFacade();
         bean = new ChangeArrivalDeadlineDate();
         Field facadeField = ChangeArrivalDeadlineDate.class
@@ -37,6 +45,7 @@ public class ChangeArrivalDeadlineDateTest {
     @After
     public void tearDown() {
         PrimeFaces.setCurrent(null);
+        facesContext.release();
     }
 
     @Test
@@ -61,6 +70,11 @@ public class ChangeArrivalDeadlineDateTest {
         bean.load();
 
         assertNull(bean.getArrivalDeadlineDate());
+        assertEquals(1, facesContext.messages.size());
+        assertEquals(FacesMessage.SEVERITY_ERROR,
+                facesContext.messages.get(0).getSeverity());
+        assertEquals("The cargo arrival deadline could not be read.",
+                facesContext.messages.get(0).getSummary());
     }
 
     @Test
@@ -73,6 +87,9 @@ public class ChangeArrivalDeadlineDateTest {
                 return new Dialog() {
                     @Override
                     public void closeDynamic(Object data) {
+                        assertEquals(1, facade.changeDeadlineCalls);
+                        assertEquals("ABC", facade.changedTrackingId);
+                        assertSame(selectedDate, facade.changedDate);
                         assertEquals("DONE", data);
                     }
                 };
@@ -87,9 +104,44 @@ public class ChangeArrivalDeadlineDateTest {
 
     @Test
     public void nullDateIsRejectedWithoutFacadeCall() {
+        PrimeFaces.setCurrent(new PrimeFaces() {
+            @Override
+            public Dialog dialog() {
+                return new Dialog() {
+                    @Override
+                    public void closeDynamic(Object data) {
+                        fail("Dialog must remain open when validation fails");
+                    }
+                };
+            }
+        });
+
         bean.changeArrivalDeadline();
 
         assertEquals(0, facade.changeDeadlineCalls);
+    }
+
+    private static class RecordingFacesContext extends FacesContextWrapper {
+        private final List<FacesMessage> messages = new ArrayList<FacesMessage>();
+
+        private void install() {
+            setCurrentInstance(this);
+        }
+
+        @Override
+        public FacesContext getWrapped() {
+            return null;
+        }
+
+        @Override
+        public void addMessage(String clientId, FacesMessage message) {
+            messages.add(message);
+        }
+
+        @Override
+        public void release() {
+            setCurrentInstance(null);
+        }
     }
 
     private static class RecordingFacade implements BookingServiceFacade {
